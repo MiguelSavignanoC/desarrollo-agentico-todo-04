@@ -1,0 +1,12 @@
+create_table("deleted_tasks") {
+	t.Column("id", "uuid", {primary: true})
+	t.Column("title", "string", {"size": 200})
+	t.Column("description", "text", {"default": ""})
+	t.Column("color", "string", {"size": 20, "default": "default"})
+	t.Column("completed", "bool", {"default": false})
+	t.Column("created_at", "timestamp", {})
+	t.Column("updated_at", "timestamp", {})
+	t.Column("deleted_at", "timestamp", {})
+	t.DisableTimestamps()
+}
+add_index("deleted_tasks", "deleted_at", {})

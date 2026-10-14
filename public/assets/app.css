@@ -7,9 +7,11 @@
 body,
 h1,
 h2,
+h3,
 p,
 ul,
-form {
+form,
+fieldset {
   margin: 0;
   padding: 0;
 }
@@ -92,7 +94,7 @@ body {
 
 .container {
   width: 100%;
-  max-width: 57rem;
+  max-width: 72rem;
   margin: 0 auto;
   padding: 4rem 3rem;
   min-width: 0;
@@ -115,26 +117,172 @@ h1 {
   font-size: 0.8rem;
 }
 
-.task-list {
+[hidden] {
+  display: none !important;
+}
+
+/* Paleta de colores (clases color-<clave>; la paleta vive en models.TaskColors). */
+.color-default { --card-bg: #ffffff; --card-border: #e0e0dc; }
+.color-coral { --card-bg: #faafa8; --card-border: transparent; }
+.color-peach { --card-bg: #f39f76; --card-border: transparent; }
+.color-sand { --card-bg: #fff8b8; --card-border: transparent; }
+.color-mint { --card-bg: #e2f6d3; --card-border: transparent; }
+.color-sage { --card-bg: #b4ddd3; --card-border: transparent; }
+.color-fog { --card-bg: #d4e4ed; --card-border: transparent; }
+.color-storm { --card-bg: #aeccdc; --card-border: transparent; }
+.color-dusk { --card-bg: #d3bfdb; --card-border: transparent; }
+.color-blossom { --card-bg: #f6e2dd; --card-border: transparent; }
+.color-clay { --card-bg: #e9e3d4; --card-border: transparent; }
+.color-chalk { --card-bg: #efeff1; --card-border: #dcdce0; }
+
+/* Sobre los fondos de color, el gris atenuado general no llega a AA: se oscurece
+   dentro de tarjetas y composer (contraste mínimo 4.6:1 con la paleta). */
+.card,
+.composer {
+  --color-muted: #45453f;
+}
+
+/* Composer (alta de tareas) */
+.composer {
+  max-width: 36rem;
+  margin: 0 auto 2rem;
+  padding: 0.35rem 0.5rem;
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--card-border, #e0e0dc);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3), 0 2px 6px 2px rgba(60, 64, 67, 0.15);
+  transition: background-color 150ms ease;
+}
+
+.composer input[type="text"],
+.composer textarea,
+.card-edit input[type="text"],
+.card-edit textarea {
+  border: 0;
+  background: transparent;
+}
+
+.composer input[type="text"] {
+  font-weight: 600;
+}
+
+.composer-extra {
+  animation: composer-open 160ms ease-out;
+}
+
+.js .composer.is-collapsed .composer-extra {
+  display: none;
+}
+
+.composer-toolbar,
+.card-edit-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem;
+}
+
+.toolbar-actions {
+  display: flex;
+  margin-left: auto;
+}
+
+html:not(.js) [data-composer-close],
+html:not(.js) [data-edit-cancel] {
+  display: none;
+}
+
+/* Rejilla de tarjetas */
+.card-grid {
   list-style: none;
-}
-
-.task {
   display: grid;
-  grid-template-columns: 44px minmax(0, 1fr) auto;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: 1rem;
   align-items: start;
-  column-gap: 0.3rem;
-  min-height: 61px;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid var(--color-border);
 }
 
-.task-title {
-  align-self: center;
+.card {
+  position: relative;
   min-width: 0;
-  padding: 0.65rem 0;
+  padding: 0.75rem 0.9rem 0.25rem;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  transition: box-shadow 150ms ease, background-color 150ms ease;
+}
+
+.card:hover,
+.card:focus-within {
+  box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+}
+
+.card[aria-busy="true"] {
+  opacity: 0.7;
+}
+
+.card-view {
+  cursor: text;
+  min-height: 1.5rem;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
   overflow-wrap: anywhere;
-  line-height: 1.55;
+}
+
+.card-description {
+  margin-top: 0.4rem;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 10;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.is-completed .card-title,
+.is-completed .card-description {
+  color: var(--color-muted);
+  text-decoration: line-through;
+  text-decoration-color: currentColor;
+}
+
+.card.is-editing {
+  z-index: 1;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  animation: card-lift 180ms ease-out;
+}
+
+.card-edit input[type="text"] {
+  padding-inline: 0.25rem;
+  font-weight: 600;
+}
+
+.card-edit textarea {
+  padding-inline: 0.25rem;
+}
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+  margin-left: -0.5rem;
+}
+
+.card-actions form {
+  display: flex;
+}
+
+.card.is-entering {
+  animation: card-in 200ms ease-out;
+}
+
+.card.is-leaving {
+  animation: card-out 180ms ease-in forwards;
+  pointer-events: none;
 }
 
 .task-toggle-button,
@@ -151,7 +299,7 @@ h1 {
   color: var(--color-muted);
   background: transparent;
   border: 0;
-  border-radius: 6px;
+  border-radius: 50%;
   cursor: pointer;
   text-decoration: none;
 }
@@ -161,7 +309,7 @@ h1 {
   place-items: center;
   width: 20px;
   height: 20px;
-  border: 1.5px solid #858580;
+  border: 1.5px solid var(--color-muted);
   border-radius: 50%;
   color: #ffffff;
   transition: background-color 120ms ease, border-color 120ms ease;
@@ -183,29 +331,15 @@ h1 {
   opacity: 1;
 }
 
-.task-completed .task-title {
-  color: var(--color-muted);
-  text-decoration: line-through;
-  text-decoration-color: #96968f;
+.is-completed .completion-icon {
+  background: var(--color-muted);
+  border-color: var(--color-muted);
+  color: #ffffff;
+  animation: check-pop 220ms ease-out;
 }
 
-.task-completed .completion-icon {
-  background: #777771;
-  border-color: #777771;
-}
-
-.task-completed .completion-icon svg {
+.is-completed .completion-icon svg {
   opacity: 1;
-}
-
-.task-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.1rem;
-}
-
-.task-actions form {
-  display: flex;
 }
 
 .icon-action svg {
@@ -215,37 +349,97 @@ h1 {
 
 .icon-action:hover {
   color: var(--color-text);
-  background: #f2f2ee;
+  background: rgba(95, 99, 104, 0.12);
 }
 
 .icon-danger:hover {
   color: var(--color-danger);
-  background: #fcf0ec;
+  background: rgba(165, 43, 37, 0.1);
 }
 
-.new-task {
-  margin-top: 0.75rem;
+.icon-primary {
+  color: var(--color-text);
 }
 
-.new-task-row {
+/* Selector de color */
+.palette {
   display: flex;
-  align-items: center;
-  gap: 0.6rem;
+  flex-wrap: wrap;
+  gap: 0.1rem;
+  min-width: 0;
+  padding: 0.25rem 0;
+  border: 0;
 }
 
-.add-mark {
+.swatch {
+  position: relative;
   display: grid;
   place-items: center;
-  flex-shrink: 0;
-  width: 44px;
-  height: 44px;
-  color: var(--color-primary);
-  font-size: 1.8rem;
-  font-weight: 300;
-  line-height: 1;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
 }
 
-input[type="text"] {
+.swatch::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  background: var(--card-bg);
+  border: 2px solid var(--card-border);
+  border-radius: 50%;
+}
+
+.color-default.swatch::before,
+.color-chalk.swatch::before {
+  border-color: #c4c4be;
+}
+
+.swatch:hover::before {
+  border-color: var(--color-text);
+}
+
+.swatch:has(.swatch-input:checked)::before {
+  border-color: #5f6368;
+}
+
+.swatch-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.swatch-check {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  color: #3c4043;
+  opacity: 0;
+}
+
+.swatch-input:checked ~ .swatch-check {
+  opacity: 1;
+}
+
+.swatch:has(.swatch-input:focus-visible) {
+  border-radius: 50%;
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.edit-task .palette {
+  margin-top: 1rem;
+}
+
+/* Formularios */
+input[type="text"],
+textarea {
+  display: block;
   width: 100%;
   min-width: 0;
   min-height: 44px;
@@ -257,11 +451,13 @@ input[type="text"] {
   border-radius: 6px;
 }
 
-.new-task-row input {
-  flex: 1;
+textarea {
+  resize: vertical;
+  line-height: 1.5;
 }
 
-input::placeholder {
+input::placeholder,
+textarea::placeholder {
   color: var(--color-muted);
 }
 
@@ -270,44 +466,10 @@ input[aria-invalid="true"] {
   background: #fff9f7;
 }
 
-.button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  min-height: 44px;
-  padding: 0.6rem 0.9rem;
-  border: 1px solid #dadad4;
-  border-radius: 6px;
-  color: #41413d;
-  background: #f6f6f2;
-  font-family: inherit;
-  font-size: 0.85rem;
-  font-weight: 600;
-  line-height: 1.5;
-  text-decoration: none;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.button:hover {
-  background: #eaeae4;
-}
-
-.button-primary {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: #ffffff;
-}
-
-.button-primary:hover {
-  background: var(--color-primary-hover);
-  border-color: var(--color-primary-hover);
-}
-
 a:focus-visible,
 button:focus-visible,
-input:focus-visible {
+input:focus-visible,
+textarea:focus-visible {
   outline: 3px solid var(--color-focus);
   outline-offset: 3px;
 }
@@ -327,10 +489,15 @@ input:focus-visible {
   font-size: 0.85rem;
 }
 
+.card .field-error {
+  margin-bottom: 0.5rem;
+}
+
 .empty-state {
   padding: 1rem 0;
   color: var(--color-muted);
   font-size: 0.9rem;
+  text-align: center;
 }
 
 .flash {
@@ -362,11 +529,19 @@ input:focus-visible {
   color: var(--color-text);
 }
 
-.edit-task label {
+.edit-task {
+  max-width: 40rem;
+}
+
+.edit-task label:not(.swatch) {
   display: block;
-  margin-bottom: 0.5rem;
+  margin: 1rem 0 0.5rem;
   font-size: 0.85rem;
   font-weight: 600;
+}
+
+.edit-task label:first-of-type {
+  margin-top: 0;
 }
 
 .edit-task-actions {
@@ -377,6 +552,71 @@ input:focus-visible {
   margin-top: 1.5rem;
   padding-top: 1.25rem;
   border-top: 1px solid var(--color-border);
+}
+
+/* Toast */
+.toast-region {
+  position: fixed;
+  left: 1.5rem;
+  bottom: 1.5rem;
+  z-index: 10;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 48px;
+  padding: 0.25rem 0.5rem 0.25rem 1rem;
+  color: #ffffff;
+  background: #323232;
+  border-radius: 6px;
+  box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 6px 10px rgba(0, 0, 0, 0.14);
+  font-size: 0.9rem;
+  animation: toast-in 200ms ease-out;
+}
+
+.toast.is-leaving {
+  animation: toast-out 160ms ease-in forwards;
+}
+
+.toast-action,
+.toast-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 0.6rem;
+  font: inherit;
+  font-weight: 600;
+  color: #8ab4f8;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.toast-close {
+  padding: 0;
+  color: #e8eaed;
+}
+
+.toast-action:hover,
+.toast-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.toast-action svg,
+.toast-close svg {
+  width: 18px;
+  height: 18px;
+}
+
+.toast button:focus-visible {
+  outline-color: #8ab4f8;
+  outline-offset: 0;
 }
 
 .sr-only,
@@ -392,14 +632,64 @@ input:focus-visible {
   border: 0;
 }
 
+/* Animaciones */
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(6px);
+  }
+}
+
+@keyframes card-out {
+  to {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+
+@keyframes check-pop {
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+@keyframes card-lift {
+  from {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    transform: translateY(2px);
+  }
+}
+
+@keyframes composer-open {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@keyframes toast-out {
+  to {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
 @media (hover: hover) and (pointer: fine) {
-  .task-actions {
+  .card-actions {
     opacity: 0;
     transition: opacity 120ms ease;
   }
 
-  .task:hover .task-actions,
-  .task:focus-within .task-actions {
+  .card:hover .card-actions,
+  .card:focus-within .card-actions,
+  .card.is-editing .card-actions {
     opacity: 1;
   }
 }
@@ -429,29 +719,18 @@ input:focus-visible {
     padding: 2rem 1rem;
   }
 
-  .task-actions {
+  .card-actions {
     opacity: 1;
   }
 
-  .task {
-    grid-template-columns: 36px minmax(0, 1fr) auto;
+  .toast-region {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
   }
 
-  .task-toggle-button,
-  .add-mark {
-    margin-left: -4px;
-  }
-
-  .task-title {
-    font-size: 0.9rem;
-  }
-
-  .new-task-row {
-    gap: 0.4rem;
-  }
-
-  .add-mark {
-    width: 36px;
+  .toast {
+    justify-content: space-between;
   }
 }
 
@@ -459,24 +738,15 @@ input:focus-visible {
   .container {
     padding-inline: 0.8rem;
   }
-
-  .new-task-row {
-    flex-wrap: wrap;
-  }
-
-  .new-task-row input {
-    flex-basis: calc(100% - 44px);
-  }
-
-  .new-task-row .button {
-    margin-left: auto;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
-    transition: none !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

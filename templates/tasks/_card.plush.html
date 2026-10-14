@@ -1,0 +1,76 @@
+<li class="card color-<%= card.Color %><%= if (card.Completed) { %> is-completed<% } %><%= if (cardEditing) { %> is-editing<% } %>" id="task-<%= card.ID %>" data-task-card data-task-id="<%= card.ID %>">
+  <div class="card-view" data-card-view<%= if (cardEditing) { %> hidden<% } %>>
+    <h3 class="card-title" id="task-<%= card.ID %>-heading"><%= card.Title %></h3>
+    <%= if (card.Description != "") { %>
+      <p class="card-description"><%= card.Description %></p>
+    <% } %>
+    <%= if (card.Completed) { %>
+      <span class="task-status">Completada</span>
+    <% } %>
+  </div>
+
+  <form action="/tasks/<%= card.ID %>" method="POST" class="card-edit" data-card-edit<%= if (!cardEditing) { %> hidden<% } %>>
+    <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
+    <input type="hidden" name="_method" value="PUT">
+    <label class="sr-only" for="task-<%= cardForm.ID %>-title">Título</label>
+    <input
+      id="task-<%= cardForm.ID %>-title"
+      class="card-edit-title"
+      type="text"
+      name="title"
+      value="<%= cardForm.Title %>"
+      maxlength="200"
+      autocomplete="off"
+      <%= if (cardErrors.HasAny()) { %>aria-invalid="true" aria-describedby="task-<%= cardForm.ID %>-error"<% } %>
+    >
+    <textarea id="task-<%= cardForm.ID %>-description" class="card-edit-description" name="description" maxlength="2000" rows="3" aria-label="Descripción" placeholder="Descripción"><%= cardForm.Description %></textarea>
+    <div class="card-edit-toolbar">
+      <%= partial("tasks/palette.plush.html", {paletteSelected: cardForm.Color, paletteId: "task-" + cardForm.ID.String()}) %>
+      <div class="toolbar-actions">
+        <button type="button" class="icon-action" data-edit-cancel aria-label="Cancelar edición" title="Cancelar edición">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18" /></svg>
+        </button>
+        <button type="submit" class="icon-action icon-primary" aria-label="Guardar cambios" title="Guardar cambios">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10" /></svg>
+        </button>
+      </div>
+    </div>
+    <%= if (cardErrors.HasAny()) { %>
+      <p id="task-<%= cardForm.ID %>-error" class="field-error" role="alert">
+        <%= for (m) in cardErrors.Get("title") { %><%= m %> <% } %><%= for (m) in cardErrors.Get("description") { %><%= m %> <% } %><%= for (m) in cardErrors.Get("color") { %><%= m %> <% } %>
+      </p>
+    <% } %>
+  </form>
+
+  <div class="card-actions">
+    <form action="/tasks/<%= card.ID %>/toggle" method="POST" class="task-toggle" data-task-toggle>
+      <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
+      <input type="hidden" name="_method" value="PUT">
+      <button
+        type="submit"
+        class="task-toggle-button"
+        aria-pressed="<%= if (card.Completed) { %>true<% } else { %>false<% } %>"
+        aria-label="<%= if (card.Completed) { %>Reabrir<% } else { %>Completar<% } %> tarea: <%= card.Title %>"
+        title="<%= if (card.Completed) { %>Reabrir<% } else { %>Completar<% } %> tarea"
+      >
+        <span class="completion-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 12 4 4 8-8" /></svg>
+        </span>
+      </button>
+    </form>
+    <a href="/tasks/<%= card.ID %>/edit" class="icon-action" data-edit-open aria-label="Editar tarea: <%= card.Title %>" title="Editar tarea">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m15 5 4 4M4 20l4-1L20 7a2.8 2.8 0 0 0-4-4L4 15l-1 6Z" />
+      </svg>
+    </a>
+    <form action="/tasks/<%= card.ID %>" method="POST" class="task-delete" data-task-delete>
+      <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
+      <input type="hidden" name="_method" value="DELETE">
+      <button type="submit" class="icon-action icon-danger" aria-label="Eliminar tarea: <%= card.Title %>" title="Eliminar tarea">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v5M14 11v5" />
+        </svg>
+      </button>
+    </form>
+  </div>
+</li>

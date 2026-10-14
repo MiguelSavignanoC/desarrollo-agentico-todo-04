@@ -54,6 +54,7 @@ func App() *buffalo.App {
 		app.PUT("/tasks/{task_id}", TasksUpdate)
 		app.PUT("/tasks/{task_id}/toggle", TasksToggle)
 		app.DELETE("/tasks/{task_id}", TasksDestroy)
+		app.POST("/tasks/{task_id}/restore", TasksRestore)
 		app.GET("/healthz", HealthCheck)
 
 		app.ServeFiles("/", http.FS(public.FS())) // serve files from the public directory
