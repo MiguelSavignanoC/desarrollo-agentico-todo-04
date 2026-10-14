@@ -69,3 +69,55 @@ func (ms *ModelSuite) Test_Task_Toggle_Persists() {
 	ms.NoError(ms.DB.Find(reloaded, task.ID))
 	ms.True(reloaded.Completed)
 }
+
+func (ms *ModelSuite) Test_Task_Color_DefaultsWhenEmpty() {
+	task := &Task{Title: "Sin color"}
+
+	verrs, err := ms.DB.ValidateAndCreate(task)
+	ms.NoError(err)
+	ms.False(verrs.HasAny())
+
+	reloaded := &Task{}
+	ms.NoError(ms.DB.Find(reloaded, task.ID))
+	ms.Equal(ColorDefault, reloaded.Color)
+}
+
+func (ms *ModelSuite) Test_Task_Color_AllPaletteValid() {
+	for _, c := range TaskColors {
+		task := &Task{Title: "Color " + c.Key, Color: c.Key}
+		verrs, err := ms.DB.ValidateAndCreate(task)
+		ms.NoError(err)
+		ms.False(verrs.HasAny(), c.Key)
+	}
+}
+
+func (ms *ModelSuite) Test_Task_Color_Invalid() {
+	for _, color := range []string{"magenta", "<script>"} {
+		task := &Task{Title: "Color inválido", Color: color}
+		verrs, err := ms.DB.ValidateAndCreate(task)
+		ms.NoError(err)
+		ms.True(verrs.HasAny())
+		ms.Contains(verrs.Get("color"), "El color seleccionado no es válido.")
+	}
+
+	count, err := ms.DB.Count(&Task{})
+	ms.NoError(err)
+	ms.Equal(0, count)
+}
+
+func (ms *ModelSuite) Test_Task_Description_MaxLength() {
+	task := &Task{Title: "Descripción al límite", Description: strings.Repeat("á", DescriptionMaxLength)}
+
+	verrs, err := ms.DB.ValidateAndCreate(task)
+	ms.NoError(err)
+	ms.False(verrs.HasAny())
+}
+
+func (ms *ModelSuite) Test_Task_Description_TooLong_Invalid() {
+	task := &Task{Title: "Descripción larga", Description: strings.Repeat("á", DescriptionMaxLength+1)}
+
+	verrs, err := ms.DB.ValidateAndCreate(task)
+	ms.NoError(err)
+	ms.True(verrs.HasAny())
+	ms.Contains(verrs.Get("description"), "La descripción no puede superar los 2000 caracteres.")
+}

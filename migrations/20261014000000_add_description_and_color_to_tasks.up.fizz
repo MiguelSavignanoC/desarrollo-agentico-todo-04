@@ -1,0 +1,2 @@
+add_column("tasks", "description", "text", {"default": ""})
+add_column("tasks", "color", "string", {"size": 20, "default": "default"})

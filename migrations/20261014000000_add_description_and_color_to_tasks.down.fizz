@@ -1,0 +1,2 @@
+drop_column("tasks", "color")
+drop_column("tasks", "description")

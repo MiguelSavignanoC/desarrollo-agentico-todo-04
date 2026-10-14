@@ -17,14 +17,21 @@
     autofocus
     <%= if (errors.HasAny()) { %>aria-invalid="true" aria-describedby="title-error"<% } else { %>aria-describedby="title-help"<% } %>
   >
-  <p id="title-help" class="field-hint">Hasta 200 caracteres. Los demás datos de la tarea no cambian.</p>
+  <p id="title-help" class="field-hint">Hasta 200 caracteres.</p>
+  <label for="task-description">Descripción</label>
+  <textarea id="task-description" name="description" rows="5" maxlength="2000"><%= task.Description %></textarea>
+  <%= partial("tasks/palette.plush.html", {paletteSelected: task.Color, paletteId: "edit"}) %>
   <%= if (errors.HasAny()) { %>
     <p id="title-error" class="field-error" role="alert">
-      <%= for (msg) in errors.Get("title") { %><%= msg %><% } %>
+      <%= for (m) in errors.Get("title") { %><%= m %> <% } %><%= for (m) in errors.Get("description") { %><%= m %> <% } %><%= for (m) in errors.Get("color") { %><%= m %> <% } %>
     </p>
   <% } %>
   <div class="edit-task-actions">
-    <a href="/" class="button">Cancelar</a>
-    <button type="submit" class="button button-primary">Guardar cambios</button>
+    <a href="/" class="icon-action" aria-label="Cancelar" title="Cancelar">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18" /></svg>
+    </a>
+    <button type="submit" class="icon-action icon-primary" aria-label="Guardar cambios" title="Guardar cambios">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10" /></svg>
+    </button>
   </div>
 </form>
